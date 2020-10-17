@@ -1,4 +1,4 @@
-module easydatabase {
+module EasyDatabase {
 	requires java.base;
 	requires java.desktop;
 	requires java.sql;
