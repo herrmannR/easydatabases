@@ -8,6 +8,7 @@ import java.util.stream.Stream;
 import org.apache.derby.run.run;
 
 import de.herrmannR.easydatabase.GUI.DatabaseView;
+import de.herrmannR.easydatabase.util.Command;
 
 public class Main {
 
@@ -73,27 +74,6 @@ public class Main {
 			break;
 		default:
 			throw new IllegalArgumentException("Unexpected value: " + command);
-		}
-	}
-
-	private static enum Command {
-		HELP("/help", "Lists all available commands."), EXIT("/exit", "The programm will be terminated."),
-		RUN_IJ_TOOL("/ij", "Starts ij-tool."), RUN_TABLE_MANAGER("/tm", "Starts table managment GUI.");
-
-		private final String expression;
-		private final String description;
-
-		private Command(String expression, String description) {
-			this.expression = expression;
-			this.description = description;
-		}
-
-		public String getExpression() {
-			return expression;
-		}
-
-		public String getDescription() {
-			return description;
 		}
 	}
 }

@@ -10,7 +10,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -18,10 +17,10 @@ import java.util.Set;
 import de.herrmannR.easydatabase.structure.DataPackage;
 import de.herrmannR.easydatabase.structure.Filter;
 import de.herrmannR.easydatabase.structure.RowPackage;
+import de.herrmannR.easydatabase.util.Database;
+import de.herrmannR.easydatabase.util.NotImplementedException;
 
 public class DatabaseManager {
-
-	private static final String CONTENT_URL = "jdbc:derby:databases/local/content";
 
 	private static final String GET_ROW_COUNT = "SELECT COUNT(*) FROM ";
 	private static final String GET_ID_FROM_TABLE_NAME = "SELECT id FROM table_data WHERE name = ?";
@@ -31,9 +30,6 @@ public class DatabaseManager {
 	private static final String GET_ROW_COLUMNS = "SELECT primary_keys FROM table_data WHERE name = ?";
 
 	private static final String SELECT_FROM = "SELECT * FROM ";
-	private static final String INSERT = "INSERT INTO ";
-
-	private static final HashMap<String, String> INSERT_INTO = new HashMap<String, String>();
 
 	private final PreparedStatement tableDescription;
 	private final PreparedStatement tableGetId;
@@ -46,24 +42,12 @@ public class DatabaseManager {
 	private DatabaseMetaData meta;
 
 	private DatabaseManager() throws SQLException {
-		connection = DriverManager.getConnection(CONTENT_URL);
+		connection = DriverManager.getConnection(Database.DERBY_LOCAL.getUrl());
 		meta = connection.getMetaData();
 		tableDescription = connection.prepareStatement(GET_TABLE_DESCRIPTION);
 		tableGetId = connection.prepareStatement(GET_ID_FROM_TABLE_NAME);
 		tableDependencies = connection.prepareStatement(GET_DEPENDENCIES);
 		tableGetPrimaryColumns = connection.prepareStatement(GET_ROW_COLUMNS);
-
-		INSERT_INTO.put("GESTALTER", INSERT + "gestalter VALUES (DEFAULT, ?, ?, ?)");
-		INSERT_INTO.put("LAND", INSERT + "land VALUES (?, ?, ?, ?)");
-		INSERT_INTO.put("MOTIV", INSERT + "motiv VALUES (DEFAULT, ?)");
-		INSERT_INTO.put("MOTIV_GESTALTER", INSERT + "motiv_gestalter VALUES (?, ?)");
-		INSERT_INTO.put("MUENZE", INSERT + "muenze VALUES (DEFAULT, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-		INSERT_INTO.put("MUENZE_SAMMLUNG", INSERT + "muenze_sammlung VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-		INSERT_INTO.put("PRAEGESTAETTE", INSERT + "praegestaette VALUES (DEFAULT, ?, ?, ?)");
-		INSERT_INTO.put("SAMMLUNG", INSERT + "sammlung VALUES (DEFAULT, ?, ?, ?, ?, ?");
-		INSERT_INTO.put("TABLE_DATA", INSERT + "table_data VALUES (DEFAULT, ?, ?, ?)");
-		INSERT_INTO.put("TABLE_DEPENDENCIES", INSERT + "table_dependencies VALUES (?, ?)");
-		INSERT_INTO.put("VORDERSEITE", INSERT + "vorderseite VALUES (DEFAULT, ?, ?, ?)");
 	}
 
 	public DataPackage selectFrom(String table, Filter filter) throws SQLException {
@@ -114,21 +98,22 @@ public class DatabaseManager {
 		return state;
 	}
 
-	public String insertRow(String table, RowPackage data) throws SQLException {
-		String state = "Data successfull inserted.";
-		PreparedStatement pstmt = connection.prepareStatement(INSERT_INTO.get(table));
-		int skipped = 0;
-		for (int i = 0; i < data.getColumnCount(); i++) {
-			Object obj = data.getValue(i);
-			if (obj != null && obj.equals("DEFAULT")) {
-				skipped++;
-			} else {
-				pstmt.setObject(i + 1 - skipped, data.getValue(i));
-			}
-		}
-		pstmt.executeUpdate();
-		pstmt.close();
-		return state;
+	public String insertRow(String table, RowPackage data) throws NotImplementedException {
+//		String state = "Data successfull inserted.";
+//		PreparedStatement pstmt = connection.prepareStatement(INSERT_INTO.get(table));
+//		int skipped = 0;
+//		for (int i = 0; i < data.getColumnCount(); i++) {
+//			Object obj = data.getValue(i);
+//			if (obj != null && obj.equals("DEFAULT")) {
+//				skipped++;
+//			} else {
+//				pstmt.setObject(i + 1 - skipped, data.getValue(i));
+//			}
+//		}
+//		pstmt.executeUpdate();
+//		pstmt.close();
+//		return state;
+		throw new NotImplementedException("insertRow(String table, RowPackage data)");
 	}
 
 	public ArrayList<String> getTables() throws SQLException {
