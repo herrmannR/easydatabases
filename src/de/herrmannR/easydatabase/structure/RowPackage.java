@@ -36,4 +36,18 @@ public class RowPackage extends Package {
 		}
 		return expr;
 	}
+
+	@Override
+	public String toString() {
+		String array = "\n\t[";
+		for (int i = 0; i < this.columnCount; i++) {
+			try {
+				array += "\"" + this.getValue(i) + "\" ";
+			} catch (IndexOutOfBoundsException e) {
+				array += "\"!UNDEFIENED!\" ";
+			}
+		}
+		array += "]";
+		return array;
+	}
 }

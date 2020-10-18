@@ -8,7 +8,7 @@ public class DataPackage extends Package {
 	private final ArrayList<Object[]> values;
 	private int rowCount;
 
-	protected DataPackage(int columnCount, Set<String> primaryKeys) {
+	public DataPackage(int columnCount, Set<String> primaryKeys) {
 		super(new String[columnCount], new String[columnCount], primaryKeys, columnCount);
 		this.values = new ArrayList<>();
 		this.rowCount = 0;
@@ -93,7 +93,7 @@ public class DataPackage extends Package {
 				try {
 					array += "\"" + this.getValue(i, j) + "\" ";
 				} catch (IndexOutOfBoundsException e) {
-					array += "\"!EMPTY!\" ";
+					array += "\"!UNDEFIENED!\" ";
 				}
 			}
 			array += "]";
