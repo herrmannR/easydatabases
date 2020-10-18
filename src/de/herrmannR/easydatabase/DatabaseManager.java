@@ -10,6 +10,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -36,13 +37,13 @@ public class DatabaseManager {
 	private final PreparedStatement tableDependencies;
 	private final PreparedStatement tableGetPrimaryColumns;
 
-	private static DatabaseManager instance;
+	private static HashMap<Database, DatabaseManager> instances;
 
 	private Connection connection;
 	private DatabaseMetaData meta;
 
-	private DatabaseManager() throws SQLException {
-		connection = DriverManager.getConnection(Database.DERBY_LOCAL.getUrl());
+	private DatabaseManager(Database database) throws SQLException {
+		connection = DriverManager.getConnection(database.getUrl());
 		meta = connection.getMetaData();
 		tableDescription = connection.prepareStatement(GET_TABLE_DESCRIPTION);
 		tableGetId = connection.prepareStatement(GET_ID_FROM_TABLE_NAME);
@@ -188,18 +189,18 @@ public class DatabaseManager {
 		return this.selectFrom(table, new Filter());
 	}
 
-	public static DatabaseManager getInstance() throws SQLException {
-		if (instance == null) {
-			instance = new DatabaseManager();
+	public static DatabaseManager getInstance(Database database) throws SQLException {
+		if (!instances.containsKey(database)) {
+			instances.put(database, new DatabaseManager(database));
 		}
-		return instance;
+		return instances.get(database);
 	}
 
-	public static void closeInstance() {
-		if (instance != null) {
+	public static void closeInstance(Database database) {
+		if (instances.containsKey(database)) {
 			try {
-				instance.connection.close();
-				instance = null;
+				instances.get(database).connection.close();
+				instances.remove(database);
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
@@ -208,9 +209,9 @@ public class DatabaseManager {
 
 	public static void main(String[] args) {
 		try {
-			Iterator<String> tables = DatabaseManager.getInstance().getTables().iterator();
+			Iterator<String> tables = DatabaseManager.getInstance(Database.DERBY_LOCAL).getTables().iterator();
 			while (tables.hasNext()) {
-				Set<String> res = DatabaseManager.getInstance().getPrimaryCols(tables.next());
+				Set<String> res = DatabaseManager.getInstance(Database.DERBY_LOCAL).getPrimaryCols(tables.next());
 				for (String s : res) {
 					System.out.println(s);
 				}

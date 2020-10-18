@@ -11,6 +11,7 @@ import javax.swing.JDialog;
 import javax.swing.JLabel;
 
 import de.herrmannR.easydatabase.DatabaseManager;
+import de.herrmannR.easydatabase.GUI.DatabaseView;
 import de.herrmannR.easydatabase.GUI.components.InputField;
 import de.herrmannR.easydatabase.structure.Filter;
 import de.herrmannR.easydatabase.structure.RowPackage;
@@ -50,7 +51,8 @@ public abstract class RowDialog extends JDialog implements ActionListener {
 
 	public RowDialog(Frame parent, String tableName, Filter primaryKeys) throws SQLException {
 		super(parent);
-		this.dataPackage = DatabaseManager.getInstance().selectFrom(tableName, primaryKeys).createRowPackage(0);
+		this.dataPackage = DatabaseManager.getInstance(((DatabaseView) this.getParent()).database)
+				.selectFrom(tableName, primaryKeys).createRowPackage(0);
 		this.inputFields = new InputField[dataPackage.getColumnCount()];
 		this.tableName = tableName;
 		this.primaryKeys = primaryKeys;

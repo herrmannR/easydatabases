@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import javax.swing.JOptionPane;
 
 import de.herrmannR.easydatabase.DatabaseManager;
+import de.herrmannR.easydatabase.GUI.DatabaseView;
 import de.herrmannR.easydatabase.GUI.components.InputField;
 import de.herrmannR.easydatabase.structure.Filter;
 
@@ -29,7 +30,8 @@ public class EditRowDialog extends RowDialog {
 	@Override
 	protected void performSave() {
 		try {
-			String result = DatabaseManager.getInstance().updateRow(tableName, this.getCurrentData(), this.primaryKeys);
+			String result = DatabaseManager.getInstance(((DatabaseView) this.getParent()).database).updateRow(tableName,
+					this.getCurrentData(), this.primaryKeys);
 			JOptionPane.showMessageDialog(this, result);
 			this.dispose();
 		} catch (Exception e) {

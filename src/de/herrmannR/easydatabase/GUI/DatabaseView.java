@@ -7,6 +7,7 @@ import java.util.HashMap;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -16,6 +17,7 @@ import de.herrmannR.easydatabase.GUI.components.ContentTable;
 import de.herrmannR.easydatabase.GUI.dialogs.TableDialog;
 import de.herrmannR.easydatabase.GUI.util.CloseHandling;
 import de.herrmannR.easydatabase.GUI.util.DoubleClickListener;
+import de.herrmannR.easydatabase.util.Database;
 
 public class DatabaseView extends JFrame implements DoubleClickListener {
 
@@ -26,23 +28,26 @@ public class DatabaseView extends JFrame implements DoubleClickListener {
 	private static final int DESCRIPTION_COLUMN = 2;
 	private static final int REFERENCES_COLUMN = 3;
 
+	public final Database database;
 	public final HashMap<String, TableDialog> tableViews = new HashMap<String, TableDialog>();
 
 	private final Dimension minSize = new Dimension(1000, 600);
 
 	public DatabaseView() {
+		database = (Database) JOptionPane.showInputDialog(this, "Select the database you want to access.",
+				"Database-Selection", JOptionPane.OK_CANCEL_OPTION, null, Database.values(), 0);
+
+		if (database == null) {
+			System.exit(0);
+		}
+
 		this.setMinimumSize(minSize);
 		this.init();
 		this.addWindowListener(new CloseHandling());
 	}
 
-	public static void main(String[] args) {
-		DatabaseView adminFrame = new DatabaseView();
-		adminFrame.setVisible(true);
-	}
-
 	private void init() {
-		ContentTable table = new ContentTable(this);
+		ContentTable table = new ContentTable(this, this);
 
 		TableColumnModel columnModel = table.getColumnModel();
 		columnModel.getColumn(TABLE_COLUMN).setPreferredWidth(150);
@@ -50,7 +55,7 @@ public class DatabaseView extends JFrame implements DoubleClickListener {
 		columnModel.getColumn(DESCRIPTION_COLUMN).setPreferredWidth(500);
 		columnModel.getColumn(DESCRIPTION_COLUMN).setCellRenderer(new DefaultTableCellRenderer() {
 
-			private static final long serialVersionUID = -4743366150161981332L;
+			private static final long serialVersionUID = 2638355105114045117L;
 
 			@Override
 			public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
@@ -84,5 +89,10 @@ public class DatabaseView extends JFrame implements DoubleClickListener {
 		ContentTable table = (ContentTable) e.getSource();
 		int row = table.rowAtPoint(e.getPoint());
 		this.showTable((String) table.getValueAt(row, 0));
+	}
+
+	public static void main(String[] args) {
+		DatabaseView adminFrame = new DatabaseView();
+		adminFrame.setVisible(true);
 	}
 }

@@ -80,7 +80,8 @@ public class TableDialog extends JDialog implements DoubleClickListener, ActionL
 	@Override
 	public void mouseDoubleClicked(MouseEvent e) {
 		try {
-			Set<String> primCols = DatabaseManager.getInstance().getPrimaryCols(table);
+			Set<String> primCols = DatabaseManager.getInstance(((DatabaseView) this.getParent()).database)
+					.getPrimaryCols(table);
 			Filter primaryKeys = new Filter();
 			int row = content.rowAtPoint(e.getPoint());
 			for (String primCol : primCols) {

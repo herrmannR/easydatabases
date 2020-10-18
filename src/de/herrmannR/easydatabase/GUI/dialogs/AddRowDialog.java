@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import javax.swing.JOptionPane;
 
 import de.herrmannR.easydatabase.DatabaseManager;
+import de.herrmannR.easydatabase.GUI.DatabaseView;
 import de.herrmannR.easydatabase.GUI.components.InputField;
 
 public class AddRowDialog extends RowDialog {
@@ -30,7 +31,8 @@ public class AddRowDialog extends RowDialog {
 	@Override
 	protected void performSave() {
 		try {
-			String result = DatabaseManager.getInstance().insertRow(this.tableName, this.getCurrentData());
+			String result = DatabaseManager.getInstance(((DatabaseView) this.getParent()).database)
+					.insertRow(this.tableName, this.getCurrentData());
 			JOptionPane.showMessageDialog(this, result);
 			this.dispose();
 		} catch (Exception e) {

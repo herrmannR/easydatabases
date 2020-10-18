@@ -7,6 +7,7 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
 import de.herrmannR.easydatabase.DatabaseManager;
+import de.herrmannR.easydatabase.GUI.DatabaseView;
 import de.herrmannR.easydatabase.structure.DataPackage;
 
 public class ContentTable extends JTable {
@@ -18,22 +19,22 @@ public class ContentTable extends JTable {
 	/**
 	 * Use it displaying all tables with descriptions.
 	 */
-	public ContentTable(MouseListener clickHandling) {
+	public ContentTable(DatabaseView parent, MouseListener clickHandling) {
 		Object[] tables = {};
 		Object[] tableRowCounts = {};
 		Object[] tableDescriptions = {};
 		Object[] tableDependencies = {};
 		try {
-			tables = DatabaseManager.getInstance().getTables().toArray();
+			tables = DatabaseManager.getInstance(parent.database).getTables().toArray();
 			tableRowCounts = new Object[tables.length];
 			tableDescriptions = new Object[tables.length];
 			tableDependencies = new Object[tables.length];
 			String table = "";
 			for (int i = 0; i < tableRowCounts.length; i++) {
 				table = (String) tables[i];
-				tableRowCounts[i] = DatabaseManager.getInstance().getRowCount(table);
-				tableDescriptions[i] = DatabaseManager.getInstance().getTableDescription(table);
-				tableDependencies[i] = DatabaseManager.getInstance().getTableDependencies(table);
+				tableRowCounts[i] = DatabaseManager.getInstance(parent.database).getRowCount(table);
+				tableDescriptions[i] = DatabaseManager.getInstance(parent.database).getTableDescription(table);
+				tableDependencies[i] = DatabaseManager.getInstance(parent.database).getTableDependencies(table);
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -53,7 +54,8 @@ public class ContentTable extends JTable {
 	 */
 	public ContentTable(String table, MouseListener clickHandling) {
 		try {
-			DataPackage selection = DatabaseManager.getInstance().selectFrom(table);
+			DataPackage selection = DatabaseManager.getInstance(((DatabaseView) this.getParent()).database)
+					.selectFrom(table);
 			this.model.setDataVector(selection.getDataArray(), selection.getColumnNames());
 		} catch (SQLException e) {
 			e.printStackTrace();
