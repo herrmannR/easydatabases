@@ -15,7 +15,7 @@ public class RowPackage extends Package {
 	public void setValue(int index, Object value) {
 		this.values[index] = value;
 	}
-	
+
 	public Object getValue(int index) {
 		try {
 			return values[index];

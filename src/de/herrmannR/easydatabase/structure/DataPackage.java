@@ -25,7 +25,7 @@ public class DataPackage extends Package {
 	}
 
 	public void setColumnName(int column, String columnName) {
-		this.checkValidAccess(column);
+		this.checkForValidColumn(column);
 		if (this.columnNames[column] != null) {
 			throw new IllegalArgumentException(
 					"For this column (" + column + ") a name is already set!" + "\n" + "Current name: "
@@ -35,7 +35,7 @@ public class DataPackage extends Package {
 	}
 
 	public void setDataType(int column, String dataType) {
-		this.checkValidAccess(column);
+		this.checkForValidColumn(column);
 		if (this.dataTypes[column] != null) {
 			throw new IllegalArgumentException(
 					"For this column (" + column + ") a datatype is already set!" + "\n" + "Current datatype: "
