@@ -12,8 +12,8 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumnModel;
 
-import de.herrmannR.easydatabase.GUI.admin.dialogs.TableDialog;
 import de.herrmannR.easydatabase.GUI.components.ContentTable;
+import de.herrmannR.easydatabase.GUI.dialogs.TableDialog;
 import de.herrmannR.easydatabase.GUI.util.CloseHandling;
 import de.herrmannR.easydatabase.GUI.util.DoubleClickListener;
 

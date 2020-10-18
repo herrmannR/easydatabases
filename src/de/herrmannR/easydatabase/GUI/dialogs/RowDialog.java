@@ -1,4 +1,4 @@
-package de.herrmannR.easydatabase.GUI.admin.dialogs;
+package de.herrmannR.easydatabase.GUI.dialogs;
 
 import java.awt.Dimension;
 import java.awt.Frame;

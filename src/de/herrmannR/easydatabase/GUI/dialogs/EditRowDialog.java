@@ -1,4 +1,4 @@
-package de.herrmannR.easydatabase.GUI.admin.dialogs;
+package de.herrmannR.easydatabase.GUI.dialogs;
 
 import java.awt.Frame;
 import java.sql.SQLException;
