@@ -9,7 +9,7 @@ public abstract class Package {
 	protected final Set<String> primaryKeys;
 	protected final int columnCount;
 
-	public Package(String[] columnNames, String[] dataTypes, Set<String> primaryKeys, int columnCount) {
+	protected Package(String[] columnNames, String[] dataTypes, Set<String> primaryKeys, int columnCount) {
 		if (columnCount < 1) {
 			throw new IllegalArgumentException(
 					"RowPackage has to have at least one column, but columnCount is " + columnCount);
