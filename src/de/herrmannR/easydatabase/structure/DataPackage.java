@@ -59,15 +59,14 @@ public class DataPackage extends Package {
 		return data;
 	}
 
-	public RowPackage createRowPackage(int column) {
+	public RowPackage createRowPackage(int row) {
 		Object[] rowData;
 		try {
-			rowData = this.values.get(column);
+			rowData = this.values.get(row);
 		} catch (IndexOutOfBoundsException e) {
 			rowData = new Object[this.columnCount];
 		}
-		System.out.println(this);
-		return new RowPackage(rowData, this.columnNames, this.dataTypes, this.primaryKeys, column + 1);
+		return new RowPackage(rowData, this.columnNames, this.dataTypes, this.primaryKeys, this.columnCount);
 	}
 
 	public Object getValue(int row, int column) {

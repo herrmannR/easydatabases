@@ -3,7 +3,6 @@ package de.herrmannR.easydatabase.GUI.dialogs;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -25,6 +24,7 @@ import de.herrmannR.easydatabase.GUI.DatabaseView;
 import de.herrmannR.easydatabase.GUI.components.ContentTable;
 import de.herrmannR.easydatabase.GUI.util.DoubleClickListener;
 import de.herrmannR.easydatabase.structure.Filter;
+import de.herrmannR.easydatabase.util.Database;
 
 public class TableDialog extends JDialog implements DoubleClickListener, ActionListener {
 
@@ -35,17 +35,19 @@ public class TableDialog extends JDialog implements DoubleClickListener, ActionL
 
 	private final Dimension minSize = new Dimension(1000, 300);
 	private final String table;
+	private final Database database;
 
 	private JTable content;
 
 	public TableDialog(DatabaseView parent, String table) {
 		super(parent);
 		this.table = table;
+		this.database = parent.database;
 
 		this.setMinimumSize(minSize);
 		this.getContentPane().setLayout(new BorderLayout());
 
-		this.content = new ContentTable(table, this);
+		this.content = new ContentTable(table, this, parent.database);
 		JScrollPane tablePanel = new JScrollPane(content);
 
 		JLabel header = new JLabel(table);
@@ -80,15 +82,14 @@ public class TableDialog extends JDialog implements DoubleClickListener, ActionL
 	@Override
 	public void mouseDoubleClicked(MouseEvent e) {
 		try {
-			Set<String> primCols = DatabaseManager.getInstance(((DatabaseView) this.getParent()).database)
-					.getPrimaryCols(table);
+			Set<String> primCols = DatabaseManager.getInstance(this.database).getPrimaryCols(table);
 			Filter primaryKeys = new Filter();
 			int row = content.rowAtPoint(e.getPoint());
 			for (String primCol : primCols) {
 				int column = content.getColumn(primCol).getModelIndex();
 				primaryKeys.addAttribute(primCol, content.getValueAt(row, column));
 			}
-			new EditRowDialog((Frame) this.getParent(), table, primaryKeys);
+			new EditRowDialog((DatabaseView) this.getParent(), table, primaryKeys);
 		} catch (SQLException e1) {
 			JOptionPane.showMessageDialog(getParent(), "Can't open EditRowDialog!\n" + e1.getMessage(), "SQL-Exception",
 					JOptionPane.ERROR_MESSAGE);
@@ -103,7 +104,7 @@ public class TableDialog extends JDialog implements DoubleClickListener, ActionL
 			this.dispose();
 		} else if (e.getActionCommand().equals(ADD_NEW)) {
 			try {
-				new AddRowDialog((Frame) this.getParent(), table);
+				new AddRowDialog((DatabaseView) this.getParent(), table);
 			} catch (SQLException e1) {
 				JOptionPane.showMessageDialog(getParent(), "Can't open AddRowDialog!\n" + e1.getMessage(),
 						"SQL-Exception", JOptionPane.ERROR_MESSAGE);

@@ -1,6 +1,5 @@
 package de.herrmannR.easydatabase.GUI.dialogs;
 
-import java.awt.Frame;
 import java.sql.SQLException;
 
 import javax.swing.JOptionPane;
@@ -13,8 +12,8 @@ public class AddRowDialog extends RowDialog {
 
 	private static final long serialVersionUID = 9176943484740649961L;
 
-	public AddRowDialog(Frame parent, String tableName) throws SQLException {
-		super(parent, tableName);
+	public AddRowDialog(DatabaseView parent, String tableName) throws SQLException {
+		super(parent, tableName, "Add");
 	}
 
 	@Override
@@ -31,8 +30,7 @@ public class AddRowDialog extends RowDialog {
 	@Override
 	protected void performSave() {
 		try {
-			String result = DatabaseManager.getInstance(((DatabaseView) this.getParent()).database)
-					.insertRow(this.tableName, this.getCurrentData());
+			String result = DatabaseManager.getInstance(this.database).insertRow(this.tableName, this.getCurrentData());
 			JOptionPane.showMessageDialog(this, result);
 			this.dispose();
 		} catch (Exception e) {

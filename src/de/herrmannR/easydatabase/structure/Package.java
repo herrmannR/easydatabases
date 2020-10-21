@@ -14,13 +14,6 @@ public abstract class Package {
 			throw new IllegalArgumentException(
 					"RowPackage has to have at least one column, but columnCount is " + columnCount);
 		}
-		Set<String> nameSet = Set.of(columnNames);
-		for (String key : primaryKeys) {
-			if (!nameSet.contains(key)) {
-				throw new IllegalArgumentException(
-						"The given primary key '" + key + "' does not exist in the column names array, but it has to.");
-			}
-		}
 		this.columnNames = columnNames;
 		this.dataTypes = dataTypes;
 		this.primaryKeys = primaryKeys;

@@ -1,6 +1,5 @@
 package de.herrmannR.easydatabase.GUI.dialogs;
 
-import java.awt.Frame;
 import java.sql.SQLException;
 
 import javax.swing.JOptionPane;
@@ -14,8 +13,8 @@ public class EditRowDialog extends RowDialog {
 
 	private static final long serialVersionUID = -3087962565055357930L;
 
-	public EditRowDialog(Frame parent, String tableName, Filter primaryKeys) throws SQLException {
-		super(parent, tableName, primaryKeys);
+	public EditRowDialog(DatabaseView parent, String tableName, Filter primaryKeys) throws SQLException {
+		super(parent, tableName, primaryKeys, "Save");
 	}
 
 	@Override
@@ -30,8 +29,8 @@ public class EditRowDialog extends RowDialog {
 	@Override
 	protected void performSave() {
 		try {
-			String result = DatabaseManager.getInstance(((DatabaseView) this.getParent()).database).updateRow(tableName,
-					this.getCurrentData(), this.primaryKeys);
+			String result = DatabaseManager.getInstance(this.database).updateRow(tableName, this.getCurrentData(),
+					this.primaryKeys);
 			JOptionPane.showMessageDialog(this, result);
 			this.dispose();
 		} catch (Exception e) {

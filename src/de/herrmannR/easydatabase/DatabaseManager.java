@@ -37,7 +37,7 @@ public class DatabaseManager {
 	private final PreparedStatement tableDependencies;
 	private final PreparedStatement tableGetPrimaryColumns;
 
-	private static HashMap<Database, DatabaseManager> instances;
+	private static HashMap<Database, DatabaseManager> instances = new HashMap<Database, DatabaseManager>();
 
 	private Connection connection;
 	private DatabaseMetaData meta;

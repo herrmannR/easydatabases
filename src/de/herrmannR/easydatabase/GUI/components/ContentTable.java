@@ -9,6 +9,7 @@ import javax.swing.table.DefaultTableModel;
 import de.herrmannR.easydatabase.DatabaseManager;
 import de.herrmannR.easydatabase.GUI.DatabaseView;
 import de.herrmannR.easydatabase.structure.DataPackage;
+import de.herrmannR.easydatabase.util.Database;
 
 public class ContentTable extends JTable {
 
@@ -52,10 +53,9 @@ public class ContentTable extends JTable {
 	 * 
 	 * @param table
 	 */
-	public ContentTable(String table, MouseListener clickHandling) {
+	public ContentTable(String table, MouseListener clickHandling, Database database) {
 		try {
-			DataPackage selection = DatabaseManager.getInstance(((DatabaseView) this.getParent()).database)
-					.selectFrom(table);
+			DataPackage selection = DatabaseManager.getInstance(database).selectFrom(table);
 			this.model.setDataVector(selection.getDataArray(), selection.getColumnNames());
 		} catch (SQLException e) {
 			e.printStackTrace();

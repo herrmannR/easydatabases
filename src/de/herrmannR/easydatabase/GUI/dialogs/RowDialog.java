@@ -1,7 +1,6 @@
 package de.herrmannR.easydatabase.GUI.dialogs;
 
 import java.awt.Dimension;
-import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
@@ -15,6 +14,7 @@ import de.herrmannR.easydatabase.GUI.DatabaseView;
 import de.herrmannR.easydatabase.GUI.components.InputField;
 import de.herrmannR.easydatabase.structure.Filter;
 import de.herrmannR.easydatabase.structure.RowPackage;
+import de.herrmannR.easydatabase.util.Database;
 
 public abstract class RowDialog extends JDialog implements ActionListener {
 
@@ -40,19 +40,24 @@ public abstract class RowDialog extends JDialog implements ActionListener {
 	private static final int BUTTON_WIDTH = 130;
 	private static final int BUTTON_SPACE = 5;
 
+	protected final Database database;
+
+	private RowPackage dataPackage;
+
 	protected String tableName;
 	protected InputField[] inputFields;
-	private RowPackage dataPackage;
 	protected Filter primaryKeys;
 
-	public RowDialog(Frame parent, String tableName) throws SQLException {
-		this(parent, tableName, new Filter());
+	public RowDialog(DatabaseView parent, String tableName, String saveButtonName) throws SQLException {
+		this(parent, tableName, new Filter(), saveButtonName);
 	}
 
-	public RowDialog(Frame parent, String tableName, Filter primaryKeys) throws SQLException {
+	public RowDialog(DatabaseView parent, String tableName, Filter primaryKeys, String saveButtonName)
+			throws SQLException {
 		super(parent);
-		this.dataPackage = DatabaseManager.getInstance(((DatabaseView) this.getParent()).database)
-				.selectFrom(tableName, primaryKeys).createRowPackage(0);
+		this.database = parent.database;
+		this.dataPackage = DatabaseManager.getInstance(this.database).selectFrom(tableName, primaryKeys)
+				.createRowPackage(0);
 		this.inputFields = new InputField[dataPackage.getColumnCount()];
 		this.tableName = tableName;
 		this.primaryKeys = primaryKeys;
@@ -60,7 +65,7 @@ public abstract class RowDialog extends JDialog implements ActionListener {
 		this.getContentPane().setLayout(null);
 		this.initLabels();
 		this.initFields();
-		this.initButtons();
+		this.initButtons(saveButtonName);
 		this.setMinimumSize(new Dimension(DIALOG_WIDTH, dataPackage.getColumnCount() * ROW_HEIGHT + START_HEIGHT
 				+ SPACE_LAST_FIELD_BUTTONS + BUTTON_HEIGHT + START_HEIGHT));
 		this.setModal(true);
@@ -87,9 +92,9 @@ public abstract class RowDialog extends JDialog implements ActionListener {
 		}
 	}
 
-	private void initButtons() {
+	private void initButtons(String saveButtonName) {
 		JButton cancelButton = new JButton("Cancel");
-		JButton saveButton = new JButton("Add");
+		JButton saveButton = new JButton(saveButtonName);
 
 		saveButton.setActionCommand(SAVE);
 		saveButton.addActionListener(this);
