@@ -30,7 +30,7 @@ public class AddRowDialog extends RowDialog {
 	@Override
 	protected void performSave() {
 		try {
-			String result = DatabaseManager.getInstance(this.database).insertRow(this.tableName, this.getCurrentData());
+			String result = DatabaseManager.getInstance().insertRow(this.tableName, this.getCurrentData());
 			JOptionPane.showMessageDialog(this, result);
 			this.dispose();
 		} catch (Exception e) {

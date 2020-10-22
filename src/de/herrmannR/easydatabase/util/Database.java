@@ -21,8 +21,7 @@ public enum Database {
 		return url;
 	}
 
-	@SuppressWarnings("unused")
-	public Database byName(String name) {
+	public static Database byName(String name) {
 		for (Database database : Database.values()) {
 			if (database.getName().equals(name)) {
 				return database;

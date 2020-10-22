@@ -8,7 +8,6 @@ import java.util.HashMap;
 
 import javax.swing.JFrame;
 import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.table.TableColumnModel;
@@ -18,7 +17,6 @@ import de.herrmannR.easydatabase.GUI.components.ContentTable.ContentTableCellRen
 import de.herrmannR.easydatabase.GUI.dialogs.TableDialog;
 import de.herrmannR.easydatabase.GUI.util.CloseHandling;
 import de.herrmannR.easydatabase.GUI.util.ContentTableClickListener;
-import de.herrmannR.easydatabase.util.Database;
 
 public class DatabaseView extends JFrame implements ContentTableClickListener {
 
@@ -29,7 +27,6 @@ public class DatabaseView extends JFrame implements ContentTableClickListener {
 	private static final int DESCRIPTION_COLUMN = 2;
 	private static final int REFERENCES_COLUMN = 3;
 
-	public final Database database;
 	public final HashMap<String, TableDialog> tableViews = new HashMap<String, TableDialog>();
 
 	private final Dimension minSize = new Dimension(1000, 600);
@@ -37,14 +34,9 @@ public class DatabaseView extends JFrame implements ContentTableClickListener {
 	private ContentTable content;
 
 	public DatabaseView() {
-		database = (Database) JOptionPane.showInputDialog(this, "Select the database you want to access.",
-				"Database-Selection", JOptionPane.OK_CANCEL_OPTION, null, Database.values(), 0);
-
-		if (database == null) {
-			System.exit(0);
-		}
-
 		this.setMinimumSize(minSize);
+		Dimension window = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
+		this.setLocation((window.width - minSize.width) / 2, (window.height - minSize.height) / 2);
 		this.init();
 		this.addWindowListener(new CloseHandling());
 	}
@@ -76,6 +68,10 @@ public class DatabaseView extends JFrame implements ContentTableClickListener {
 		tableViews.put(table, null);
 	}
 
+	public void updateTable() {
+		this.content.refresh();
+	}
+
 	@Override
 	public void mouseDoubleClicked(MouseEvent e) {
 		int row = this.content.rowAtPoint(e.getPoint());
@@ -96,14 +92,5 @@ public class DatabaseView extends JFrame implements ContentTableClickListener {
 		});
 		popupMenu.add(open);
 		popupMenu.show(this.content, e.getX(), e.getY());
-	}
-
-	public void updateTable() {
-		this.content.refresh(this.database);
-	}
-
-	public static void main(String[] args) {
-		DatabaseView adminFrame = new DatabaseView();
-		adminFrame.setVisible(true);
 	}
 }

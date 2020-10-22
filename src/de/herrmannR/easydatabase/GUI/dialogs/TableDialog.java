@@ -21,11 +21,11 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 
 import de.herrmannR.easydatabase.DatabaseManager;
+import de.herrmannR.easydatabase.Main;
 import de.herrmannR.easydatabase.GUI.DatabaseView;
 import de.herrmannR.easydatabase.GUI.components.ContentTable;
 import de.herrmannR.easydatabase.GUI.util.ContentTableClickListener;
 import de.herrmannR.easydatabase.structure.Filter;
-import de.herrmannR.easydatabase.util.Database;
 
 public class TableDialog extends JDialog implements ContentTableClickListener, ActionListener {
 
@@ -36,19 +36,17 @@ public class TableDialog extends JDialog implements ContentTableClickListener, A
 
 	private final Dimension minSize = new Dimension(1000, 300);
 	private final String table;
-	private final Database database;
 
 	private ContentTable content;
 
 	public TableDialog(DatabaseView parent, String table) {
 		super(parent);
 		this.table = table;
-		this.database = parent.database;
 
 		this.setMinimumSize(minSize);
 		this.getContentPane().setLayout(new BorderLayout());
 
-		this.content = new ContentTable(table, parent.database);
+		this.content = new ContentTable(table);
 		this.content.addContentTableClickListener(this);
 		JScrollPane tablePanel = new JScrollPane(content);
 
@@ -73,8 +71,8 @@ public class TableDialog extends JDialog implements ContentTableClickListener, A
 		this.addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
-				parent.onCloseDialog(table);
-				parent.updateTable();
+				Main.adminFrame.onCloseDialog(table);
+				Main.adminFrame.updateTable();
 				super.windowClosed(e);
 			}
 		});
@@ -83,7 +81,7 @@ public class TableDialog extends JDialog implements ContentTableClickListener, A
 	}
 
 	private Filter getFilterForRow(int row) throws SQLException {
-		Set<String> primCols = DatabaseManager.getInstance(this.database).getPrimaryCols(table);
+		Set<String> primCols = DatabaseManager.getInstance().getPrimaryCols(table);
 		Filter filter = new Filter();
 		for (String primCol : primCols) {
 			int column = content.getColumn(primCol).getModelIndex();
@@ -105,7 +103,7 @@ public class TableDialog extends JDialog implements ContentTableClickListener, A
 	}
 
 	private void reloadTable() {
-		this.content.refresh(this.database, this.table);
+		this.content.refresh(this.table);
 	}
 
 	@Override
@@ -119,6 +117,7 @@ public class TableDialog extends JDialog implements ContentTableClickListener, A
 		if (e.getActionCommand().equals(CLOSE)) {
 			((DatabaseView) this.getParent()).onCloseDialog(table);
 			this.dispose();
+			Main.adminFrame.updateTable();
 		} else if (e.getActionCommand().equals(ADD_NEW)) {
 			try {
 				new AddRowDialog((DatabaseView) this.getParent(), table);
@@ -152,7 +151,7 @@ public class TableDialog extends JDialog implements ContentTableClickListener, A
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {
-					String result = DatabaseManager.getInstance(TableDialog.this.database).deleteRow(table,
+					String result = DatabaseManager.getInstance().deleteRow(table,
 							TableDialog.this.getFilterForRow(row));
 					JOptionPane.showMessageDialog(TableDialog.this, result);
 				} catch (Exception ex) {

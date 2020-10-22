@@ -29,8 +29,7 @@ public class EditRowDialog extends RowDialog {
 	@Override
 	protected void performSave() {
 		try {
-			String result = DatabaseManager.getInstance(this.database).updateRow(tableName, this.getCurrentData(),
-					this.primaryKeys);
+			String result = DatabaseManager.getInstance().updateRow(tableName, this.getCurrentData(), this.primaryKeys);
 			JOptionPane.showMessageDialog(this, result);
 			this.dispose();
 		} catch (Exception e) {

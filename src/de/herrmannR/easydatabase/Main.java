@@ -1,32 +1,65 @@
 package de.herrmannR.easydatabase;
 
 import java.io.IOException;
-import java.util.Optional;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
-import java.util.stream.Stream;
+
+import javax.swing.JOptionPane;
 
 import org.apache.derby.run.run;
 
 import de.herrmannR.easydatabase.GUI.DatabaseView;
 import de.herrmannR.easydatabase.util.Command;
+import de.herrmannR.easydatabase.util.Database;
 
 public class Main {
 
 	private static Scanner scanner;
 
+	public static Database database;
+	public static DatabaseView adminFrame;
+
 	public static void main(String[] args) {
+		database = (Database) JOptionPane.showInputDialog(null, "Select the database you want to access.",
+				"Database-Selection", JOptionPane.OK_CANCEL_OPTION, null, Database.values(), 0);
+
+		if (database == null) {
+			System.exit(0);
+		}
+
+		for (String arg : args) {
+			String[] splitted = arg.split("-");
+			String type = splitted[0];
+			String param = splitted[1];
+			switch (type) {
+			case "command":
+				System.out.println(" > " + param);
+				if (isValidCommand(param)) {
+					try {
+						perfomCommand(Command.byExpr(param));
+					} catch (NoSuchElementException e) {
+						System.out.println("ERROR: Unknown command.");
+					}
+				} else {
+					System.out.println("ERROR: Invalid command.");
+				}
+				break;
+			default:
+				System.err.println("Unknown argument type: " + type);
+				break;
+			}
+		}
+
 		scanner = new Scanner(System.in);
 		System.out.print(" > ");
 		do {
 			String nextCommand = scanner.next();
 			if (isValidCommand(nextCommand)) {
-				Optional<Command> match = Stream.of(Command.values()).filter(c -> c.getExpression().equals(nextCommand))
-						.findFirst();
-				if (!match.isPresent()) {
+				try {
+					perfomCommand(Command.byExpr(nextCommand));
+				} catch (NoSuchElementException e) {
 					System.out.println("ERROR: Unknown command. Type '/help' for info.");
-					System.out.print(" > ");
-				} else {
-					perfomCommand(match.get());
+				} finally {
 					System.out.print(" > ");
 				}
 			} else {
@@ -70,7 +103,8 @@ public class Main {
 			System.exit(0);
 			break;
 		case RUN_TABLE_MANAGER:
-			DatabaseView.main(null);
+			adminFrame = new DatabaseView();
+			adminFrame.setVisible(true);
 			break;
 		default:
 			throw new IllegalArgumentException("Unexpected value: " + command);

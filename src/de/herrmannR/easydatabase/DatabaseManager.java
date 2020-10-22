@@ -10,7 +10,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -37,7 +36,7 @@ public class DatabaseManager {
 	private final PreparedStatement tableDependencies;
 	private final PreparedStatement tableGetPrimaryColumns;
 
-	private static HashMap<Database, DatabaseManager> instances = new HashMap<Database, DatabaseManager>();
+	private static DatabaseManager instance;
 
 	private Connection connection;
 	private DatabaseMetaData meta;
@@ -205,29 +204,26 @@ public class DatabaseManager {
 		return this.selectFrom(table, new Filter());
 	}
 
-	public static DatabaseManager getInstance(Database database) throws SQLException {
-		if (!instances.containsKey(database)) {
-			instances.put(database, new DatabaseManager(database));
+	public static DatabaseManager getInstance() throws SQLException {
+		if (instance == null) {
+			instance = new DatabaseManager(Main.database);
 		}
-		return instances.get(database);
+		return instance;
 	}
 
-	public static void closeInstance(Database database) {
-		if (instances.containsKey(database)) {
-			try {
-				instances.get(database).connection.close();
-				instances.remove(database);
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
+	public static void closeInstance() {
+		try {
+			instance.connection.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
 		}
 	}
 
 	public static void main(String[] args) {
 		try {
-			Iterator<String> tables = DatabaseManager.getInstance(Database.DERBY_LOCAL).getTables().iterator();
+			Iterator<String> tables = DatabaseManager.getInstance().getTables().iterator();
 			while (tables.hasNext()) {
-				Set<String> res = DatabaseManager.getInstance(Database.DERBY_LOCAL).getPrimaryCols(tables.next());
+				Set<String> res = DatabaseManager.getInstance().getPrimaryCols(tables.next());
 				for (String s : res) {
 					System.out.println(s);
 				}

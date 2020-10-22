@@ -14,7 +14,6 @@ import de.herrmannR.easydatabase.GUI.DatabaseView;
 import de.herrmannR.easydatabase.GUI.components.InputField;
 import de.herrmannR.easydatabase.structure.Filter;
 import de.herrmannR.easydatabase.structure.RowPackage;
-import de.herrmannR.easydatabase.util.Database;
 
 public abstract class RowDialog extends JDialog implements ActionListener {
 
@@ -40,8 +39,6 @@ public abstract class RowDialog extends JDialog implements ActionListener {
 	private static final int BUTTON_WIDTH = 130;
 	private static final int BUTTON_SPACE = 5;
 
-	protected final Database database;
-
 	private RowPackage dataPackage;
 
 	protected String tableName;
@@ -55,9 +52,7 @@ public abstract class RowDialog extends JDialog implements ActionListener {
 	public RowDialog(DatabaseView parent, String tableName, Filter primaryKeys, String saveButtonName)
 			throws SQLException {
 		super(parent);
-		this.database = parent.database;
-		this.dataPackage = DatabaseManager.getInstance(this.database).selectFrom(tableName, primaryKeys)
-				.createRowPackage(0);
+		this.dataPackage = DatabaseManager.getInstance().selectFrom(tableName, primaryKeys).createRowPackage(0);
 		this.inputFields = new InputField[dataPackage.getColumnCount()];
 		this.tableName = tableName;
 		this.primaryKeys = primaryKeys;

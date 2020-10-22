@@ -17,7 +17,6 @@ import de.herrmannR.easydatabase.DatabaseManager;
 import de.herrmannR.easydatabase.GUI.DatabaseView;
 import de.herrmannR.easydatabase.GUI.util.ContentTableClickListener;
 import de.herrmannR.easydatabase.structure.DataPackage;
-import de.herrmannR.easydatabase.util.Database;
 
 public class ContentTable extends JTable implements MouseMotionListener {
 
@@ -35,16 +34,16 @@ public class ContentTable extends JTable implements MouseMotionListener {
 		Object[] tableDescriptions = {};
 		Object[] tableDependencies = {};
 		try {
-			tables = DatabaseManager.getInstance(parent.database).getTables().toArray();
+			tables = DatabaseManager.getInstance().getTables().toArray();
 			tableRowCounts = new Object[tables.length];
 			tableDescriptions = new Object[tables.length];
 			tableDependencies = new Object[tables.length];
 			String table = "";
 			for (int i = 0; i < tableRowCounts.length; i++) {
 				table = (String) tables[i];
-				tableRowCounts[i] = DatabaseManager.getInstance(parent.database).getRowCount(table);
-				tableDescriptions[i] = DatabaseManager.getInstance(parent.database).getTableDescription(table);
-				tableDependencies[i] = DatabaseManager.getInstance(parent.database).getTableDependencies(table);
+				tableRowCounts[i] = DatabaseManager.getInstance().getRowCount(table);
+				tableDescriptions[i] = DatabaseManager.getInstance().getTableDescription(table);
+				tableDependencies[i] = DatabaseManager.getInstance().getTableDependencies(table);
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -61,9 +60,9 @@ public class ContentTable extends JTable implements MouseMotionListener {
 	 * 
 	 * @param table
 	 */
-	public ContentTable(String table, Database database) {
+	public ContentTable(String table) {
 		try {
-			DataPackage selection = DatabaseManager.getInstance(database).selectFrom(table);
+			DataPackage selection = DatabaseManager.getInstance().selectFrom(table);
 			this.model.setDataVector(selection.getDataArray(), selection.getColumnNames());
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -157,23 +156,23 @@ public class ContentTable extends JTable implements MouseMotionListener {
 		}
 	}
 
-	public void refresh(Database database) {
+	public void refresh() {
 		this.model = new ContentTableModel();
 		Object[] tables = {};
 		Object[] tableRowCounts = {};
 		Object[] tableDescriptions = {};
 		Object[] tableDependencies = {};
 		try {
-			tables = DatabaseManager.getInstance(database).getTables().toArray();
+			tables = DatabaseManager.getInstance().getTables().toArray();
 			tableRowCounts = new Object[tables.length];
 			tableDescriptions = new Object[tables.length];
 			tableDependencies = new Object[tables.length];
 			String table = "";
 			for (int i = 0; i < tableRowCounts.length; i++) {
 				table = (String) tables[i];
-				tableRowCounts[i] = DatabaseManager.getInstance(database).getRowCount(table);
-				tableDescriptions[i] = DatabaseManager.getInstance(database).getTableDescription(table);
-				tableDependencies[i] = DatabaseManager.getInstance(database).getTableDependencies(table);
+				tableRowCounts[i] = DatabaseManager.getInstance().getRowCount(table);
+				tableDescriptions[i] = DatabaseManager.getInstance().getTableDescription(table);
+				tableDependencies[i] = DatabaseManager.getInstance().getTableDependencies(table);
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -186,10 +185,10 @@ public class ContentTable extends JTable implements MouseMotionListener {
 		this.model.fireTableRowsUpdated(0, this.getRowCount() - 1);
 	}
 
-	public void refresh(Database database, String table) {
+	public void refresh(String table) {
 		this.model = new ContentTableModel();
 		try {
-			DataPackage selection = DatabaseManager.getInstance(database).selectFrom(table);
+			DataPackage selection = DatabaseManager.getInstance().selectFrom(table);
 			this.model.setDataVector(selection.getDataArray(), selection.getColumnNames());
 		} catch (SQLException e) {
 			e.printStackTrace();
