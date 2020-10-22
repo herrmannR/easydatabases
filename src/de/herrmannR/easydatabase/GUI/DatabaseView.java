@@ -1,25 +1,26 @@
 package de.herrmannR.easydatabase.GUI;
 
-import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.util.HashMap;
 
 import javax.swing.JFrame;
-import javax.swing.JLabel;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumnModel;
 
 import de.herrmannR.easydatabase.GUI.components.ContentTable;
+import de.herrmannR.easydatabase.GUI.components.ContentTable.ContentTableCellRenderer;
 import de.herrmannR.easydatabase.GUI.dialogs.TableDialog;
 import de.herrmannR.easydatabase.GUI.util.CloseHandling;
-import de.herrmannR.easydatabase.GUI.util.DoubleClickListener;
+import de.herrmannR.easydatabase.GUI.util.ContentTableClickListener;
 import de.herrmannR.easydatabase.util.Database;
 
-public class DatabaseView extends JFrame implements DoubleClickListener {
+public class DatabaseView extends JFrame implements ContentTableClickListener {
 
 	private static final long serialVersionUID = 5319220277392624846L;
 
@@ -32,6 +33,8 @@ public class DatabaseView extends JFrame implements DoubleClickListener {
 	public final HashMap<String, TableDialog> tableViews = new HashMap<String, TableDialog>();
 
 	private final Dimension minSize = new Dimension(1000, 600);
+
+	private ContentTable content;
 
 	public DatabaseView() {
 		database = (Database) JOptionPane.showInputDialog(this, "Select the database you want to access.",
@@ -47,28 +50,17 @@ public class DatabaseView extends JFrame implements DoubleClickListener {
 	}
 
 	private void init() {
-		ContentTable table = new ContentTable(this, this);
+		this.content = new ContentTable(this);
+		this.content.addContentTableClickListener(this);
 
-		TableColumnModel columnModel = table.getColumnModel();
+		TableColumnModel columnModel = this.content.getColumnModel();
 		columnModel.getColumn(TABLE_COLUMN).setPreferredWidth(150);
 		columnModel.getColumn(ROW_COUNT_COLUMN).setPreferredWidth(50);
 		columnModel.getColumn(DESCRIPTION_COLUMN).setPreferredWidth(500);
-		columnModel.getColumn(DESCRIPTION_COLUMN).setCellRenderer(new DefaultTableCellRenderer() {
-
-			private static final long serialVersionUID = 2638355105114045117L;
-
-			@Override
-			public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
-					boolean hasFocus, int row, int column) {
-				JLabel cell = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row,
-						column);
-				cell.setToolTipText(cell.getText());
-				return cell;
-			}
-		});
+		((ContentTableCellRenderer) columnModel.getColumn(DESCRIPTION_COLUMN).getCellRenderer()).setShowTooltips(true);
 		columnModel.getColumn(REFERENCES_COLUMN).setPreferredWidth(300);
 
-		JScrollPane tablePanel = new JScrollPane(table);
+		JScrollPane tablePanel = new JScrollPane(this.content);
 		this.getContentPane().add(tablePanel);
 	}
 
@@ -86,9 +78,28 @@ public class DatabaseView extends JFrame implements DoubleClickListener {
 
 	@Override
 	public void mouseDoubleClicked(MouseEvent e) {
-		ContentTable table = (ContentTable) e.getSource();
-		int row = table.rowAtPoint(e.getPoint());
-		this.showTable((String) table.getValueAt(row, 0));
+		int row = this.content.rowAtPoint(e.getPoint());
+		this.showTable((String) this.content.getValueAt(row, 0));
+	}
+
+	@Override
+	public void showPopUpMenu(MouseEvent e) {
+		JPopupMenu popupMenu = new JPopupMenu();
+		int row = this.content.rowAtPoint(e.getPoint());
+		JMenuItem open = new JMenuItem("Open");
+		open.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				DatabaseView.this.showTable((String) DatabaseView.this.content.getValueAt(row, 0));
+			}
+		});
+		popupMenu.add(open);
+		popupMenu.show(this.content, e.getX(), e.getY());
+	}
+
+	public void updateTable() {
+		this.content.refresh(this.database);
 	}
 
 	public static void main(String[] args) {

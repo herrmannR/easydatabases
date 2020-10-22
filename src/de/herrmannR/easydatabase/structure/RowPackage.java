@@ -24,16 +24,43 @@ public class RowPackage extends Package {
 		}
 	}
 
+	/**
+	 * Format: "SET <i>column1</i> = ? , <i>column2</i> = ? , ... "
+	 * 
+	 * @return
+	 */
 	public String getSetExpression() {
-		String expr = "SET ";
-		for (int i = 1; i < this.values.length; i++) {
+		String expr = " SET ";
+		for (int i = 0; i < this.values.length; i++) {
 			if (!isPrimaryKey(i)) {
-				expr += this.columnNames[0] + " = ? , ";
+				expr += this.columnNames[i] + " = ? ";
+				if (i + 1 != this.values.length) {
+					expr += ", ";
+				}
 			}
 		}
-		if (expr.endsWith(", ")) {
-			expr = expr.substring(0, expr.length() - 2);
+		return expr;
+	}
+
+	/**
+	 * Format: " VALUES ( DEFAULT, ... , ? , ... ) " or " VALUES ( ? , ... ) " The
+	 * tags DEFAULT an ? can summon in any order.
+	 * 
+	 * @return
+	 */
+	public String getInsertExpression() {
+		String expr = " VALUES (";
+		for (int i = 0; i < this.values.length; i++) {
+			if (this.getValue(i).equals("DEFAULT")) {
+				expr += "DEFAULT ";
+			} else {
+				expr += "? ";
+			}
+			if (i + 1 != this.values.length) {
+				expr += ", ";
+			}
 		}
+		expr += ") ";
 		return expr;
 	}
 

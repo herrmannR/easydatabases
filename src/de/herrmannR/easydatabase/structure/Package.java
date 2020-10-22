@@ -44,7 +44,7 @@ public abstract class Package {
 
 	protected void checkForValidColumn(int column) {
 		if (!(column < this.columnCount)) {
-			throw new ArrayIndexOutOfBoundsException("Typed column index is to big.");
+			throw new ArrayIndexOutOfBoundsException("Typed column index is too big.");
 		}
 	}
 }

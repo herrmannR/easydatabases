@@ -19,7 +19,6 @@ import de.herrmannR.easydatabase.structure.DataPackage;
 import de.herrmannR.easydatabase.structure.Filter;
 import de.herrmannR.easydatabase.structure.RowPackage;
 import de.herrmannR.easydatabase.util.Database;
-import de.herrmannR.easydatabase.util.NotImplementedException;
 
 public class DatabaseManager {
 
@@ -31,6 +30,7 @@ public class DatabaseManager {
 	private static final String GET_ROW_COLUMNS = "SELECT primary_keys FROM table_data WHERE name = ?";
 
 	private static final String SELECT_FROM = "SELECT * FROM ";
+	private static final String DELETE_FROM = "DELETE FROM ";
 
 	private final PreparedStatement tableDescription;
 	private final PreparedStatement tableGetId;
@@ -84,37 +84,53 @@ public class DatabaseManager {
 	 * @return
 	 * @throws SQLException
 	 */
-	public String updateRow(String table, RowPackage rowPackage, Filter filter) throws SQLException {
+	public String updateRow(String table, RowPackage data, Filter filter) throws SQLException {
 		String state = "Data successfull updated";
 		PreparedStatement pstmt = connection
-				.prepareStatement("UPDATE " + table + rowPackage.getSetExpression() + filter.toString());
-		for (int i = 0; i < rowPackage.getColumnCount(); i++) {
-			pstmt.setObject(i + 1, rowPackage.getValue(i));
+				.prepareStatement("UPDATE " + table + data.getSetExpression() + filter.toString());
+
+		int k = 0;
+		for (int i = 0; i < data.getColumnCount(); i++) {
+			if (!data.isPrimaryKey(i)) {
+				pstmt.setObject(k + 1, data.getValue(i));
+				k++;
+			}
 		}
-		for (int i = rowPackage.getColumnCount() - 1; i < rowPackage.getColumnCount() + filter.getLength(); i++) {
-			pstmt.setObject(i + 1, filter.getAttribute(i));
+
+		int startFilter = k;
+		for (int i = startFilter; i < startFilter + filter.getLength(); i++) {
+			pstmt.setObject(i + 1, filter.getAttribute(i - startFilter));
 		}
 		pstmt.executeUpdate();
 		pstmt.close();
 		return state;
 	}
 
-	public String insertRow(String table, RowPackage data) throws NotImplementedException {
-//		String state = "Data successfull inserted.";
-//		PreparedStatement pstmt = connection.prepareStatement(INSERT_INTO.get(table));
-//		int skipped = 0;
-//		for (int i = 0; i < data.getColumnCount(); i++) {
-//			Object obj = data.getValue(i);
-//			if (obj != null && obj.equals("DEFAULT")) {
-//				skipped++;
-//			} else {
-//				pstmt.setObject(i + 1 - skipped, data.getValue(i));
-//			}
-//		}
-//		pstmt.executeUpdate();
-//		pstmt.close();
-//		return state;
-		throw new NotImplementedException("insertRow(String table, RowPackage data)");
+	public String insertRow(String table, RowPackage data) throws SQLException {
+		String state = "Data successfull inserted";
+		PreparedStatement pstmt = connection.prepareStatement("INSERT INTO " + table + data.getInsertExpression());
+		int k = 1;
+		for (int i = 0; i < data.getColumnCount(); i++) {
+			Object obj = data.getValue(i);
+			if (obj == null || !obj.equals("DEFAULT")) {
+				pstmt.setObject(k, data.getValue(i));
+				k++;
+			}
+		}
+		pstmt.executeUpdate();
+		pstmt.close();
+		return state;
+	}
+
+	public String deleteRow(String table, Filter filter) throws SQLException {
+		String state = "Data successfull inserted";
+		PreparedStatement pstmt;
+		pstmt = connection.prepareStatement(DELETE_FROM + table + filter.toString());
+		for (int i = 0; i < filter.getLength(); i++) {
+			pstmt.setObject(i + 1, filter.getAttribute(i));
+		}
+		pstmt.executeUpdate();
+		return state;
 	}
 
 	public ArrayList<String> getTables() throws SQLException {
