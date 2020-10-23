@@ -18,7 +18,7 @@ import de.herrmannR.easydatabase.GUI.DatabaseView;
 import de.herrmannR.easydatabase.GUI.util.ContentTableClickListener;
 import de.herrmannR.easydatabase.structure.DataPackage;
 
-public class ContentTable extends JTable implements MouseMotionListener {
+public class ContentTableOld extends JTable implements MouseMotionListener {
 
 	private static final long serialVersionUID = -4312393451897838251L;
 	private static final Color HOVER_COLOR = new Color(190, 241, 249);
@@ -28,7 +28,7 @@ public class ContentTable extends JTable implements MouseMotionListener {
 	/**
 	 * Use it displaying all tables with descriptions.
 	 */
-	public ContentTable(DatabaseView parent) {
+	public ContentTableOld(DatabaseView parent) {
 		Object[] tables = {};
 		Object[] tableRowCounts = {};
 		Object[] tableDescriptions = {};
@@ -60,7 +60,7 @@ public class ContentTable extends JTable implements MouseMotionListener {
 	 * 
 	 * @param table
 	 */
-	public ContentTable(String table) {
+	public ContentTableOld(String table) {
 		try {
 			DataPackage selection = DatabaseManager.getInstance().selectFrom(table);
 			this.model.setDataVector(selection.getDataArray(), selection.getColumnNames());

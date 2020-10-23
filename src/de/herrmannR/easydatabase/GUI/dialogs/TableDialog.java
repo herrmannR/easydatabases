@@ -23,7 +23,7 @@ import javax.swing.JScrollPane;
 import de.herrmannR.easydatabase.DatabaseManager;
 import de.herrmannR.easydatabase.Main;
 import de.herrmannR.easydatabase.GUI.DatabaseView;
-import de.herrmannR.easydatabase.GUI.components.ContentTable;
+import de.herrmannR.easydatabase.GUI.components.ContentTableOld;
 import de.herrmannR.easydatabase.GUI.util.ContentTableClickListener;
 import de.herrmannR.easydatabase.structure.Filter;
 
@@ -37,7 +37,7 @@ public class TableDialog extends JDialog implements ContentTableClickListener, A
 	private final Dimension minSize = new Dimension(1000, 300);
 	private final String table;
 
-	private ContentTable content;
+	private ContentTableOld content;
 
 	public TableDialog(DatabaseView parent, String table) {
 		super(parent);
@@ -46,7 +46,7 @@ public class TableDialog extends JDialog implements ContentTableClickListener, A
 		this.setMinimumSize(minSize);
 		this.getContentPane().setLayout(new BorderLayout());
 
-		this.content = new ContentTable(table);
+		this.content = new ContentTableOld(table);
 		this.content.addContentTableClickListener(this);
 		JScrollPane tablePanel = new JScrollPane(content);
 

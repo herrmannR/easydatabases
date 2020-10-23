@@ -12,8 +12,8 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.table.TableColumnModel;
 
-import de.herrmannR.easydatabase.GUI.components.ContentTable;
-import de.herrmannR.easydatabase.GUI.components.ContentTable.ContentTableCellRenderer;
+import de.herrmannR.easydatabase.GUI.components.ContentTableOld;
+import de.herrmannR.easydatabase.GUI.components.ContentTableOld.ContentTableCellRenderer;
 import de.herrmannR.easydatabase.GUI.dialogs.TableDialog;
 import de.herrmannR.easydatabase.GUI.util.CloseHandling;
 import de.herrmannR.easydatabase.GUI.util.ContentTableClickListener;
@@ -31,7 +31,7 @@ public class DatabaseView extends JFrame implements ContentTableClickListener {
 
 	private final Dimension minSize = new Dimension(1000, 600);
 
-	private ContentTable content;
+	private ContentTableOld content;
 
 	public DatabaseView() {
 		this.setMinimumSize(minSize);
@@ -42,7 +42,7 @@ public class DatabaseView extends JFrame implements ContentTableClickListener {
 	}
 
 	private void init() {
-		this.content = new ContentTable(this);
+		this.content = new ContentTableOld(this);
 		this.content.addContentTableClickListener(this);
 
 		TableColumnModel columnModel = this.content.getColumnModel();
