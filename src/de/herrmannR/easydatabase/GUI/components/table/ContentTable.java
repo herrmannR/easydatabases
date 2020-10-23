@@ -4,6 +4,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 
 import javax.swing.JTable;
+import javax.swing.table.TableCellRenderer;
 
 public abstract class ContentTable extends JTable implements MouseMotionListener {
 
@@ -30,12 +31,22 @@ public abstract class ContentTable extends JTable implements MouseMotionListener
 		this.setModel(model);
 		this.setRowHeight(30);
 		this.setDefaultEditor(Object.class, null);
-		this.setCellRenderer();
+		for (int i = 0; i < this.getColumnCount(); i++) {
+			this.getColumnModel().getColumn(i).setCellRenderer(this.createCellRenderer(i));
+		}
 	}
 
+	/**
+	 * Should return the ContenTableModel for this table with all data freshly
+	 * pulled from the database. It is used to reload the table´s content.
+	 */
 	protected abstract ContentTableModel loadContent();
 
-	protected abstract void setCellRenderer();
+	/**
+	 * This method is automatically called after the {@ TableModel} is loaded in
+	 * {@code init()}. It should return the CellRenderer for the specific column.
+	 */
+	protected abstract TableCellRenderer createCellRenderer(int column);
 
 	@Override
 	public void mouseDragged(MouseEvent e) {
