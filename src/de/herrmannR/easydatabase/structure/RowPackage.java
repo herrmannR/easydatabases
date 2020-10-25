@@ -51,7 +51,7 @@ public class RowPackage extends Package {
 	public String getInsertExpression() {
 		String expr = " VALUES (";
 		for (int i = 0; i < this.values.length; i++) {
-			if (this.getValue(i).equals("DEFAULT")) {
+			if (this.getValue(i) != null && this.getValue(i).equals("DEFAULT")) {
 				expr += "DEFAULT ";
 			} else {
 				expr += "? ";
