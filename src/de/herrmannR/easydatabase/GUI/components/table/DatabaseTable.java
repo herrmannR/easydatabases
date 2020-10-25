@@ -1,10 +1,16 @@
 package de.herrmannR.easydatabase.GUI.components.table;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
 import java.sql.SQLException;
 
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
 import javax.swing.table.TableCellRenderer;
 
 import de.herrmannR.easydatabase.DatabaseManager;
+import de.herrmannR.easydatabase.GUI.DatabaseView;
 
 public class DatabaseTable extends ContentTable {
 
@@ -15,8 +21,11 @@ public class DatabaseTable extends ContentTable {
 	private static final String DESCRIPTION_COLUMN = "description";
 	private static final String REFERENCES_COLUMN = "references";
 
-	public DatabaseTable() {
+	private DatabaseView owner;
+
+	public DatabaseTable(DatabaseView owner) {
 		super(true);
+		this.owner = owner;
 	}
 
 	@Override
@@ -65,5 +74,27 @@ public class DatabaseTable extends ContentTable {
 		this.columnModel.getColumn(this.columnModel.getColumnIndex(ROW_COUNT_COLUMN)).setPreferredWidth(50);
 		this.columnModel.getColumn(this.columnModel.getColumnIndex(DESCRIPTION_COLUMN)).setPreferredWidth(500);
 		this.columnModel.getColumn(this.columnModel.getColumnIndex(REFERENCES_COLUMN)).setPreferredWidth(300);
+	}
+
+	@Override
+	public void mouseDoubleClicked(MouseEvent e) {
+		int row = this.rowAtPoint(e.getPoint());
+		this.owner.showTable((String) this.getValueAt(row, 0));
+	}
+
+	@Override
+	protected JPopupMenu getPopupMenu(MouseEvent e) {
+		JPopupMenu popupMenu = new JPopupMenu();
+		int row = DatabaseTable.this.rowAtPoint(e.getPoint());
+		JMenuItem open = new JMenuItem("Open");
+		open.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				DatabaseTable.this.owner.showTable((String) DatabaseTable.this.getValueAt(row, 0));
+			}
+		});
+		popupMenu.add(open);
+		return popupMenu;
 	}
 }

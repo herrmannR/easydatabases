@@ -1,9 +1,9 @@
 package de.herrmannR.easydatabase.GUI.components.table;
 
-import java.awt.PopupMenu;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 
+import javax.swing.JPopupMenu;
 import javax.swing.JTable;
 import javax.swing.table.TableCellRenderer;
 
@@ -69,7 +69,7 @@ public abstract class ContentTable extends JTable implements MouseMotionListener
 	 */
 	protected abstract TableCellRenderer createCellRenderer(int column);
 
-	protected abstract PopupMenu getPopupMenu();
+	protected abstract JPopupMenu getPopupMenu(MouseEvent e);
 
 	@Override
 	public void mouseDragged(MouseEvent e) {
@@ -87,6 +87,6 @@ public abstract class ContentTable extends JTable implements MouseMotionListener
 
 	@Override
 	public void showPopUpMenu(MouseEvent e) {
-		this.getPopupMenu().show(this, e.getX(), e.getY());
+		this.getPopupMenu(e).show(this, e.getX(), e.getY());
 	}
 }
