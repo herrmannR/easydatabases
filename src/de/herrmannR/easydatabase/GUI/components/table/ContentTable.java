@@ -1,21 +1,28 @@
 package de.herrmannR.easydatabase.GUI.components.table;
 
+import java.awt.PopupMenu;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 
 import javax.swing.JTable;
 import javax.swing.table.TableCellRenderer;
 
-public abstract class ContentTable extends JTable implements MouseMotionListener {
+public abstract class ContentTable extends JTable implements MouseMotionListener, ContentTableClickListener {
 
 	private static final long serialVersionUID = -1542077939750034032L;
 
-	private ContentTableModel model;
-
-	public ContentTable() {
+	/**
+	 * If {@code autoInit} is set false the {@code init()} method must be called
+	 * manually. Use this if you want to set some content relevant variables before
+	 * loading tables content.
+	 */
+	public ContentTable(boolean autoInit) {
 		this.addMouseMotionListener(this);
+		this.addContentTableClickListener(this);
 		this.setAutoCreateRowSorter(true);
-		this.init();
+		if (autoInit) {
+			this.init();
+		}
 	}
 
 	/**
@@ -25,20 +32,34 @@ public abstract class ContentTable extends JTable implements MouseMotionListener
 	 * After calling this method one should repaint the table, by calling
 	 * {@code repaint()}.
 	 */
-	private void init() {
-		this.model = this.loadContent();
-		this.model.initColors();
-		this.setModel(model);
-		this.setRowHeight(30);
+	protected void init() {
+		this.setModel(this.loadContent());
+		((ContentTableModel) this.getModel()).initColors();
+		this.sizing();
 		this.setDefaultEditor(Object.class, null);
+		this.setCellRenderes();
+	}
+
+	public void refresh() {
+		this.init();
+		this.repaint();
+	}
+
+	public void addContentTableClickListener(ContentTableClickListener listener) {
+		this.addMouseListener(listener);
+	}
+
+	private void setCellRenderes() {
 		for (int i = 0; i < this.getColumnCount(); i++) {
 			this.getColumnModel().getColumn(i).setCellRenderer(this.createCellRenderer(i));
 		}
 	}
 
+	protected abstract void sizing();
+
 	/**
-	 * Should return the ContenTableModel for this table with all data freshly
-	 * pulled from the database. It is used to reload the table´s content.
+	 * Should reset the ContenTableModel for this table with all data freshly pulled
+	 * from the database. It is used to reload the table´s content.
 	 */
 	protected abstract ContentTableModel loadContent();
 
@@ -48,6 +69,8 @@ public abstract class ContentTable extends JTable implements MouseMotionListener
 	 */
 	protected abstract TableCellRenderer createCellRenderer(int column);
 
+	protected abstract PopupMenu getPopupMenu();
+
 	@Override
 	public void mouseDragged(MouseEvent e) {
 
@@ -56,7 +79,14 @@ public abstract class ContentTable extends JTable implements MouseMotionListener
 	@Override
 	public void mouseMoved(MouseEvent e) {
 		int currentRow = rowAtPoint(e.getPoint());
-		this.model.setRowColour(currentRow, ContentTableModel.HOVER_COLOR);
-		this.model.resetOtherRows(currentRow, ContentTableModel.HOVER_COLOR);
+		if (currentRow != -1) {
+			((ContentTableModel) this.getModel()).setRowColour(currentRow, ContentTableModel.HOVER_COLOR);
+		}
+		((ContentTableModel) this.getModel()).resetOtherRows(currentRow, ContentTableModel.HOVER_COLOR);
+	}
+
+	@Override
+	public void showPopUpMenu(MouseEvent e) {
+		this.getPopupMenu().show(this, e.getX(), e.getY());
 	}
 }

@@ -1,4 +1,4 @@
-package de.herrmannR.easydatabase.GUI.util;
+package de.herrmannR.easydatabase.GUI.components.table;
 
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
