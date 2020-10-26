@@ -2,6 +2,7 @@ package de.herrmannR.easydatabase;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
+import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -22,11 +23,12 @@ import de.herrmannR.easydatabase.util.Database;
 public class DatabaseManager {
 
 	private static final String GET_ROW_COUNT = "SELECT COUNT(*) FROM ";
-	private static final String GET_ID_FROM_TABLE_NAME = "SELECT id FROM table_data WHERE name = ?";
-	private static final String GET_TABLE_DESCRIPTION = "SELECT description FROM table_data WHERE name = ?";
-	private static final String GET_DEPENDENCIES = "SELECT table_data.name " + "FROM table_dependencies "
-			+ "JOIN table_data ON table_data.id = table_dependencies.ref_id " + "WHERE table_dependencies.table_id = ?";
-	private static final String GET_ROW_COLUMNS = "SELECT primary_keys FROM table_data WHERE name = ?";
+	private static final String GET_ID_FROM_TABLE_NAME = "SELECT id FROM meta.table_data WHERE name = ?";
+	private static final String GET_TABLE_DESCRIPTION = "SELECT description FROM meta.table_data WHERE name = ?";
+	private static final String GET_DEPENDENCIES = "SELECT meta.table_data.name " + "FROM meta.table_dependencies "
+			+ "JOIN meta.table_data ON meta.table_data.id = meta.table_dependencies.ref_id "
+			+ "WHERE meta.table_dependencies.table_id = ?";
+	private static final String GET_ROW_COLUMNS = "SELECT primary_keys FROM meta.table_data WHERE name = ?";
 
 	private static final String SELECT_FROM = "SELECT * FROM ";
 	private static final String DELETE_FROM = "DELETE FROM ";
@@ -42,7 +44,15 @@ public class DatabaseManager {
 	private DatabaseMetaData meta;
 
 	private DatabaseManager(Database database) throws SQLException {
-		connection = DriverManager.getConnection(database.getUrl());
+		try {
+			Class.forName(database.getDriver());
+		} catch (java.lang.ClassNotFoundException e) {
+			e.printStackTrace();
+			System.exit(0);
+		}
+
+		connection = DriverManager.getConnection(database.getUrl(), database.getUser(), database.getPassword());
+
 		meta = connection.getMetaData();
 		tableDescription = connection.prepareStatement(GET_TABLE_DESCRIPTION);
 		tableGetId = connection.prepareStatement(GET_ID_FROM_TABLE_NAME);
@@ -122,7 +132,7 @@ public class DatabaseManager {
 	}
 
 	public String deleteRow(String table, Filter filter) throws SQLException {
-		String state = "Data successfull inserted";
+		String state = "Row successfully deleted.";
 		PreparedStatement pstmt;
 		pstmt = connection.prepareStatement(DELETE_FROM + table + filter.toString());
 		for (int i = 0; i < filter.getLength(); i++) {
@@ -132,11 +142,12 @@ public class DatabaseManager {
 		return state;
 	}
 
-	public ArrayList<String> getTables() throws SQLException {
-		ResultSet result = meta.getTables(null, "APP", null, null);
+	public ArrayList<String> getTables(String schema) throws SQLException {
+		String[] types = { "TABLE" };
+		ResultSet result = meta.getTables(null, schema, null, types);
 		ArrayList<String> tables = new ArrayList<String>();
 		while (result.next()) {
-			tables.add(result.getString(3));
+			tables.add(schema + "." + result.getString(3));
 		}
 		result.close();
 		return tables;
@@ -220,16 +231,21 @@ public class DatabaseManager {
 	}
 
 	public static void main(String[] args) {
-		try {
-			Iterator<String> tables = DatabaseManager.getInstance().getTables().iterator();
-			while (tables.hasNext()) {
-				Set<String> res = DatabaseManager.getInstance().getPrimaryCols(tables.next());
-				for (String s : res) {
-					System.out.println(s);
-				}
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
+		Iterator<Driver> drivers = DriverManager.getDrivers().asIterator();
+		while (drivers.hasNext()) {
+			System.out.println(drivers.next().getClass().toString());
 		}
+
+//		try {
+//			Iterator<String> tables = DatabaseManager.getInstance().getTables().iterator();
+//			while (tables.hasNext()) {
+//				Set<String> res = DatabaseManager.getInstance().getPrimaryCols(tables.next());
+//				for (String s : res) {
+//					System.out.println(s);
+//				}
+//			}
+//		} catch (SQLException e) {
+//			e.printStackTrace();
+//		}
 	}
 }

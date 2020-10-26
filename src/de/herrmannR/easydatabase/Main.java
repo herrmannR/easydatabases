@@ -110,4 +110,8 @@ public class Main {
 			throw new IllegalArgumentException("Unexpected value: " + command);
 		}
 	}
+
+	public static boolean isMetaTable(String table) {
+		return table.equals("TABLE_DATA") || table.equals("TABLE_DEPENDENCIES");
+	}
 }

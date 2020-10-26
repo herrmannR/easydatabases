@@ -16,9 +16,11 @@ public abstract class ContentTable extends JTable implements MouseMotionListener
 	 * manually. Use this if you want to set some content relevant variables before
 	 * loading tables content.
 	 */
-	public ContentTable(boolean autoInit) {
+	public ContentTable(boolean autoInit, boolean editable) {
 		this.addMouseMotionListener(this);
-		this.addContentTableClickListener(this);
+		if (editable) {
+			this.addContentTableClickListener(this);
+		}
 		this.setAutoCreateRowSorter(true);
 		if (autoInit) {
 			this.init();

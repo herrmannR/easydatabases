@@ -24,7 +24,7 @@ public class DatabaseTable extends ContentTable {
 	private DatabaseView owner;
 
 	public DatabaseTable(DatabaseView owner) {
-		super(true);
+		super(true, true);
 		this.owner = owner;
 	}
 
@@ -36,7 +36,7 @@ public class DatabaseTable extends ContentTable {
 		Object[] tableDescriptions = {};
 		Object[] tableDependencies = {};
 		try {
-			tables = DatabaseManager.getInstance().getTables().toArray();
+			tables = DatabaseManager.getInstance().getTables("content").toArray();
 			tableRowCounts = new Object[tables.length];
 			tableDescriptions = new Object[tables.length];
 			tableDependencies = new Object[tables.length];
@@ -44,8 +44,8 @@ public class DatabaseTable extends ContentTable {
 			for (int i = 0; i < tableRowCounts.length; i++) {
 				table = (String) tables[i];
 				tableRowCounts[i] = DatabaseManager.getInstance().getRowCount(table);
-				tableDescriptions[i] = DatabaseManager.getInstance().getTableDescription(table);
-				tableDependencies[i] = DatabaseManager.getInstance().getTableDependencies(table);
+				tableDescriptions[i] = DatabaseManager.getInstance().getTableDescription(table.toLowerCase());
+				tableDependencies[i] = DatabaseManager.getInstance().getTableDependencies(table.toLowerCase());
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();

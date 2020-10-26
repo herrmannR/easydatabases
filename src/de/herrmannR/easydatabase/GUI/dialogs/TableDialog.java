@@ -42,21 +42,24 @@ public class TableDialog extends JDialog implements ActionListener {
 		this.setMinimumSize(minSize);
 		this.getContentPane().setLayout(new BorderLayout());
 
-		this.content = new SingleTable(this.table, this);
+		this.content = new SingleTable(this.getTable(), this, !Main.isMetaTable(table));
 		JScrollPane tablePanel = new JScrollPane(content);
 
-		JLabel header = new JLabel(this.table);
+		JLabel header = new JLabel(this.getTable());
 		header.setFont(new Font("Arial", Font.PLAIN, 18));
 
-		JButton close = new JButton("Close");
-		JButton add = new JButton("Add row");
 		JPanel buttons = new JPanel();
 
-		add.setActionCommand(ADD_NEW);
-		add.addActionListener(this);
+		if (!Main.isMetaTable(table)) {
+			JButton add = new JButton("Add row");
+			add.setActionCommand(ADD_NEW);
+			add.addActionListener(this);
+			buttons.add(add);
+		}
+
+		JButton close = new JButton("Close");
 		close.setActionCommand(CLOSE);
 		close.addActionListener(this);
-		buttons.add(add);
 		buttons.add(close);
 
 		this.getContentPane().add(tablePanel, BorderLayout.CENTER);
@@ -66,7 +69,7 @@ public class TableDialog extends JDialog implements ActionListener {
 		this.addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
-				Main.adminFrame.onCloseDialog(TableDialog.this.table);
+				Main.adminFrame.onCloseDialog(TableDialog.this.getTable());
 				Main.adminFrame.updateTable();
 				super.windowClosed(e);
 			}
@@ -76,7 +79,7 @@ public class TableDialog extends JDialog implements ActionListener {
 	}
 
 	public Filter getFilterForRow(int row) throws SQLException {
-		Set<String> primCols = DatabaseManager.getInstance().getPrimaryCols(this.table);
+		Set<String> primCols = DatabaseManager.getInstance().getPrimaryCols(this.getTable());
 		Filter filter = new Filter();
 		for (String primCol : primCols) {
 			int column = content.getColumn(primCol).getModelIndex();
@@ -88,7 +91,7 @@ public class TableDialog extends JDialog implements ActionListener {
 	public void openRowEditDialog(int row) {
 		try {
 			Filter primaryKeys = this.getFilterForRow(row);
-			new EditRowDialog((DatabaseView) this.getParent(), this.table, primaryKeys);
+			new EditRowDialog((DatabaseView) this.getParent(), this.getTable(), primaryKeys);
 			this.reloadTable();
 		} catch (SQLException e1) {
 			JOptionPane.showMessageDialog(getParent(), "Can't open EditRowDialog!\n" + e1.getMessage(), "SQL-Exception",
@@ -104,12 +107,12 @@ public class TableDialog extends JDialog implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getActionCommand().equals(CLOSE)) {
-			((DatabaseView) this.getParent()).onCloseDialog(this.table);
+			((DatabaseView) this.getParent()).onCloseDialog(this.getTable());
 			this.dispose();
 			Main.adminFrame.updateTable();
 		} else if (e.getActionCommand().equals(ADD_NEW)) {
 			try {
-				new AddRowDialog((DatabaseView) this.getParent(), this.table);
+				new AddRowDialog((DatabaseView) this.getParent(), this.getTable());
 				this.reloadTable();
 			} catch (SQLException e1) {
 				JOptionPane.showMessageDialog(getParent(), "Can't open AddRowDialog!\n" + e1.getMessage(),
@@ -117,5 +120,9 @@ public class TableDialog extends JDialog implements ActionListener {
 				e1.printStackTrace();
 			}
 		}
+	}
+
+	public String getTable() {
+		return table;
 	}
 }

@@ -18,12 +18,10 @@ public class SingleTable extends ContentTable {
 
 	private static final long serialVersionUID = -4477745770731280306L;
 
-	private final String table;
 	private final TableDialog owner;
 
-	public SingleTable(String table, TableDialog owner) {
-		super(false);
-		this.table = table;
+	public SingleTable(String table, TableDialog owner, boolean editable) {
+		super(false, editable);
 		this.owner = owner;
 		this.init();
 	}
@@ -32,7 +30,7 @@ public class SingleTable extends ContentTable {
 	protected ContentTableModel loadContent() {
 		ContentTableModel model = new ContentTableModel();
 		try {
-			DataPackage selection = DatabaseManager.getInstance().selectFrom(this.table);
+			DataPackage selection = DatabaseManager.getInstance().selectFrom(this.owner.getTable());
 			model.setDataVector(selection.getDataArray(), selection.getColumnNames());
 			return model;
 		} catch (SQLException e) {
@@ -78,7 +76,7 @@ public class SingleTable extends ContentTable {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {
-					String result = DatabaseManager.getInstance().deleteRow(SingleTable.this.table,
+					String result = DatabaseManager.getInstance().deleteRow(SingleTable.this.owner.getTable(),
 							SingleTable.this.owner.getFilterForRow(row));
 					JOptionPane.showMessageDialog(SingleTable.this.owner, result);
 				} catch (Exception ex) {
