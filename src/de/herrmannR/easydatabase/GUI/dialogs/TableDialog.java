@@ -16,6 +16,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.table.TableColumnModel;
 
 import de.herrmannR.easydatabase.DatabaseManager;
 import de.herrmannR.easydatabase.Main;
@@ -81,6 +82,10 @@ public class TableDialog extends JDialog implements ActionListener {
 	public Filter getFilterForRow(int row) throws SQLException {
 		Set<String> primCols = DatabaseManager.getInstance().getPrimaryCols(this.getTable());
 		Filter filter = new Filter();
+		TableColumnModel tm = content.getColumnModel();
+		for (int i = 0; i < tm.getColumnCount(); i++) {
+			System.out.println(tm.getColumn(i).getIdentifier());
+		}
 		for (String primCol : primCols) {
 			int column = content.getColumn(primCol).getModelIndex();
 			filter.addAttribute(primCol, content.getValueAt(row, column));

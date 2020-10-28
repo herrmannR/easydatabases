@@ -19,7 +19,7 @@ public class AddRowDialog extends RowDialog {
 	@Override
 	protected InputField createInputfield(String columnName, String dataType, Object data, boolean isPrimaryKey) {
 		InputField field;
-		if (columnName.equals("ID")) {
+		if (columnName.equals("ID") || columnName.equals("id")) {
 			field = new InputField(InputField.STRING, "DEFAULT", false);
 		} else {
 			field = new InputField(dataType);

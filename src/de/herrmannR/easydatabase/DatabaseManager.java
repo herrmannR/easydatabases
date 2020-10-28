@@ -200,12 +200,17 @@ public class DatabaseManager {
 	}
 
 	public Set<String> getPrimaryCols(String table) throws SQLException {
-		Set<String> primaryCols = null;
+		Set<String> primaryCols = new HashSet<String>();
 		tableGetPrimaryColumns.setString(1, table);
 		ResultSet result = tableGetPrimaryColumns.executeQuery();
 		if (result.next()) {
 			String primaryKeys = result.getString(1);
-			primaryCols = new HashSet<>(Arrays.asList(primaryKeys.split("\\.")));
+			Set<String> nums = new HashSet<>(Arrays.asList(primaryKeys.split("_")));
+			Statement getColumns = connection.createStatement();
+			ResultSetMetaData columns = getColumns.executeQuery(SELECT_FROM + table).getMetaData();
+			for (String num : nums) {
+				primaryCols.add(columns.getColumnName(Integer.parseInt(num)));
+			}
 		}
 		result.close();
 		return primaryCols;
