@@ -114,7 +114,11 @@ public abstract class RowDialog extends JDialog implements ActionListener {
 
 	private void updateRowPackage() {
 		for (int i = 0; i < inputFields.length; i++) {
-			this.dataPackage.setValue(i, inputFields[i].getValue());
+			try {
+				this.dataPackage.setValue(i, inputFields[i].getValue());
+			} catch (NumberFormatException e) {
+				this.dataPackage.setValue(i, null);
+			}
 		}
 	}
 

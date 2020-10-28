@@ -2,7 +2,6 @@ package de.herrmannR.easydatabase;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
-import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -12,7 +11,6 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 
 import de.herrmannR.easydatabase.structure.DataPackage;
@@ -236,10 +234,10 @@ public class DatabaseManager {
 	}
 
 	public static void main(String[] args) {
-		Iterator<Driver> drivers = DriverManager.getDrivers().asIterator();
-		while (drivers.hasNext()) {
-			System.out.println(drivers.next().getClass().toString());
-		}
+//		Iterator<Driver> drivers = DriverManager.getDrivers().asIterator();
+//		while (drivers.hasNext()) {
+//			System.out.println(drivers.next().getClass().toString());
+//		}
 
 //		try {
 //			Iterator<String> tables = DatabaseManager.getInstance().getTables().iterator();
